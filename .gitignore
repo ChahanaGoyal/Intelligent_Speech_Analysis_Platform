@@ -1,0 +1,16 @@
+.venv/
+__pycache__/
+*.pyc
+
+outputs/
+
+.env
+
+*.wav
+*.mp3
+
+.ipynb_checkpoints/
+
+.DS_Store
+
+Thumbs.db

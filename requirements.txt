@@ -1,0 +1,10 @@
+numpy
+sounddevice
+librosa
+openai-whisper
+torch
+soundfile
+noisereduce
+scipy
+streamlit
+plotly
