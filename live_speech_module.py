@@ -111,7 +111,10 @@ def detect_pauses(
 
 ):
 
-    audio=audio.flatten()
+    if audio is None or len(audio) == 0:
+        return 0, 0.0
+
+    audio = audio.flatten()
 
     frame_duration=0.03
 

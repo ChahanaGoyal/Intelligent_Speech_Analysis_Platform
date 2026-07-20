@@ -1,9 +1,7 @@
-import streamlit as st
+import json
 import pandas as pd
 import plotly.express as px
-import time
-import json
-import os
+import streamlit as st
 
 from speech_engine import SpeechEngine
 
@@ -12,7 +10,7 @@ from speech_engine import SpeechEngine
 ############################################################
 
 st.set_page_config(
-    page_title="Real-Time Speech Analysis",
+    page_title="Intelligent Speech Analysis Platform",
     page_icon="🎤",
     layout="wide"
 )
@@ -24,8 +22,8 @@ st.set_page_config(
 if "engine" not in st.session_state:
     st.session_state.engine = SpeechEngine()
 
-if "recording" not in st.session_state:
-    st.session_state.recording = False
+if "session_started" not in st.session_state:
+    st.session_state.session_started = False
 
 engine = st.session_state.engine
 
@@ -33,12 +31,17 @@ engine = st.session_state.engine
 # TITLE
 ############################################################
 
-st.title("🎤 Real-Time Speech Analysis System")
+st.title("🎤 Intelligent Real-Time Speech Analysis Platform")
 
 st.markdown(
 """
-Record your speech, analyze it using Whisper,
-and visualize the results instantly.
+Analyze speech using Whisper AI and automatically detect:
+
+- Hesitations
+- Confusion
+- Repeat Requests
+- Speech Rate
+- Pause Analysis
 """
 )
 
@@ -48,115 +51,84 @@ and visualize the results instantly.
 
 with st.sidebar:
 
-    st.header("Project")
+    st.header("Session Controls")
 
-    st.info(
-        """
-        Features
+    if st.button("🟢 New Session", use_container_width=True):
 
-        • Speech to Text
+        engine.clear_session()
 
-        • Hesitation Detection
+        st.session_state.session_started = True
 
-        • Confusion Detection
+        st.success("New session started.")
 
-        • Speech Rate
+    if st.button("🔴 End Session", use_container_width=True):
 
-        • Pause Detection
+        st.session_state.session_started = False
 
-        • CSV Export
-
-        • JSON Export
-        """
-    )
+        st.success("Session ended.")
 
 ############################################################
-# RECORDING BUTTONS
+# RECORD AUDIO
 ############################################################
 
-col1,col2,col3=st.columns([1,1,2])
+st.header("🎤 Record Speech")
 
-with col1:
+audio = st.audio_input(
+    "Click below and record a speech chunk"
+)
 
-    if st.button(
-        "▶ Start Recording",
-        use_container_width=True
-    ):
+if audio is not None:
 
-        if not st.session_state.recording:
+    if not st.session_state.session_started:
 
-            engine.start_recording()
-
-            st.session_state.recording=True
-
-with col2:
-
-    if st.button(
-        "⏹ Stop Recording",
-        use_container_width=True
-    ):
-
-        if st.session_state.recording:
-
-            engine.stop_recording()
-
-            st.session_state.recording=False
-
-with col3:
-
-    if st.session_state.recording:
-
-        st.success("🟢 Recording...")
+        st.warning("Start a new session first.")
 
     else:
 
-        st.error("🔴 Not Recording")
+        with st.spinner("Analyzing speech..."):
+
+            engine.process_audio(audio)
+
+        st.success("Speech analyzed successfully!")
+
+############################################################
+# TRANSCRIPT
+############################################################
 
 st.divider()
 
-############################################################
-# LIVE TRANSCRIPT
-############################################################
+st.header("📝 Transcript")
 
-st.subheader("📝 Transcript")
+transcript = engine.get_transcript()
 
-transcript=engine.get_transcript()
-
-transcript_placeholder=st.empty()
-
-transcript_placeholder.text_area(
-
+st.text_area(
     "Recognized Speech",
-
     transcript,
-
     height=250
-
 )
+
 ############################################################
-# LIVE SUMMARY
+# SUMMARY
 ############################################################
 
 summary = engine.get_summary()
 
 speech_rates = summary.get("speech_rates", [])
 
-if len(speech_rates) > 0:
-    average_rate = round(
-        sum(speech_rates) / len(speech_rates),
-        2
-    )
-else:
-    average_rate = 0
+average_rate = (
+    round(sum(speech_rates) / len(speech_rates), 2)
+    if len(speech_rates) > 0
+    else 0
+)
 
 st.divider()
 
-st.subheader("📊 Session Summary")
+st.header("📊 Session Summary")
 
 c1, c2, c3, c4 = st.columns(4)
 
 c1.metric(
-    "Speech Chunks",
+    "Chunks",
     summary.get("total_chunks", 0)
 )
 
@@ -166,8 +138,8 @@ c2.metric(
 )
 
 c3.metric(
-    "Repeat Requests",
-    summary.get("repeat_request_count", 0)
+    "Confusions",
+    summary.get("confusion_count", 0)
 )
 
 c4.metric(
@@ -237,7 +209,7 @@ with right:
 
     logs = engine.get_logs()
 
-    if len(logs) > 0:
+    if len(logs)>0:
 
         df = pd.DataFrame(logs)
 
@@ -254,7 +226,7 @@ with right:
 # CHARTS
 ############################################################
 
-if summary.get("total_chunks",0) > 0:
+if summary.get("total_chunks",0)>0:
 
     chart = pd.DataFrame({
 
@@ -280,7 +252,9 @@ if summary.get("total_chunks",0) > 0:
 
     })
 
-    st.subheader("📈 Duration Analysis")
+    st.divider()
+
+    st.header("📈 Duration Analysis")
 
     fig = px.bar(
 
@@ -320,11 +294,9 @@ if summary.get("total_chunks",0) > 0:
 
 st.divider()
 
-st.subheader("📥 Downloads")
+st.header("📥 Download Reports")
 
 d1,d2,d3 = st.columns(3)
-
-transcript = engine.get_transcript()
 
 with d1:
 
@@ -344,7 +316,7 @@ with d2:
 
         "Summary",
 
-        json.dumps(summary, indent=4),
+        json.dumps(summary,indent=4),
 
         file_name="summary.json",
 
@@ -356,7 +328,7 @@ with d3:
 
     logs = engine.get_logs()
 
-    if len(logs) > 0:
+    if len(logs)>0:
 
         csv = pd.DataFrame(logs).to_csv(index=False)
 
@@ -377,21 +349,11 @@ with d3:
     )
 
 ############################################################
-# AUTO REFRESH
-############################################################
-
-if st.session_state.recording:
-
-    time.sleep(1)
-
-    st.rerun()
-
-############################################################
 # FOOTER
 ############################################################
 
 st.divider()
 
 st.caption(
-    "Built using Streamlit • Whisper • Plotly"
+    "Built using Streamlit • Whisper • Plotly • Librosa"
 )

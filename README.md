@@ -1,31 +1,33 @@
-#  Real-Time Speech Analysis System
+# 🎤 Intelligent Speech Analysis Platform
 
-A Python-based real-time speech analysis system that records live speech, converts it to text using OpenAI Whisper, extracts speech-related features, and provides an interactive Streamlit dashboard for real-time visualization and session analytics.
+An AI-powered speech analysis platform that records speech, transcribes it using OpenAI Whisper, extracts meaningful communication features, and presents interactive analytics through a Streamlit dashboard.
 
-##  Features
 
--  Real-time microphone recording
--  Speech-to-text transcription using OpenAI Whisper
--  Speech rate calculation (Words Per Minute)
--  Hesitation detection
--  Confusion detection
--  Repeat request detection
--  Pause and silence detection
--  Interactive Streamlit dashboard
--  Export transcript, summary (JSON), and speech log (CSV)
+## Features
 
-## 🛠 Tech Stack
+- 🎙 Record speech directly from the browser
+- 📝 Automatic speech-to-text transcription using Whisper
+- ⏸ Pause detection
+- 🤔 Confusion detection
+- 💬 Repeat request detection
+- ⚡ Hesitation detection
+- 📊 Speech rate analysis
+- 📈 Interactive dashboard
+- 📂 Download transcript, summary, and speech logs
+
+
+## Tech Stack
 
 - Python
 - Streamlit
 - OpenAI Whisper
+- Librosa
 - NumPy
 - Pandas
 - Plotly
-- SoundDevice
-- Librosa
 
-##  Project Structure
+
+## Project Structure
 
 ```
 Speech_Module/
@@ -33,43 +35,79 @@ Speech_Module/
 ├── app.py
 ├── speech_engine.py
 ├── live_speech_module.py
-├── outputs/
-│   ├── transcript.txt
-│   ├── summary.json
-│   └── speech_log.csv
 ├── requirements.txt
-└── README.md
+├── README.md
+├── .gitignore
+│
+└── outputs/
 ```
 
-##  How to Run
 
-1. Clone the repository.
-2. Install the required dependencies:
+## Installation
+
+Clone the repository
+
+```bash
+git clone https://github.com/ChahanaGoyal/Intelligent_Speech_Analysis_Platform.git
+cd Intelligent_Speech_Analysis_Platform
+```
+
+Install dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-3. Launch the Streamlit application:
+
+## Running the Project
+
+Start the Streamlit application
 
 ```bash
 streamlit run app.py
 ```
 
-4. Click **Start Recording**, speak into the microphone, then click **Stop Recording** to view the analysis.
+The application will automatically open in your browser.
 
-##  Output
 
-The application generates:
+## How It Works
 
-- **Transcript** (`transcript.txt`)
-- **Session Summary** (`summary.json`)
-- **Speech Log** (`speech_log.csv`)
+1. Record a speech sample using the browser microphone.
+2. Whisper converts speech into text.
+3. The platform extracts communication features including:
+   - Hesitations
+   - Confusion indicators
+   - Repeat requests
+   - Speech rate
+   - Pause analysis
+   - Silence duration
+4. Results are displayed in an interactive dashboard.
+5. Download reports in TXT, JSON, or CSV format.
 
-##  Future Improvements
+## Dashboard Includes
 
-- Emotion recognition from speech
+- Speech transcript
+- Session summary
+- Chunk-wise speech logs
+- Speaking vs Pause vs Silence visualization
+- Downloadable reports
+
+
+## Example Workflow
+
+```
+Record Speech
+Whisper Transcription
+Feature Extraction
+Dashboard
+```
+
+
+## Future Improvements
+
+- Real-time speech streaming
+- Emotion recognition
 - Speaker identification
-- Sentiment analysis
-- Live speech quality scoring
-- Cloud deployment
+- Confidence score estimation
+- Keyword extraction
+- Multi-language support
