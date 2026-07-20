@@ -2,6 +2,7 @@
 
 An AI-powered speech analysis platform that records speech, transcribes it using OpenAI Whisper, extracts meaningful communication features, and presents interactive analytics through a Streamlit dashboard.
 
+🌐 **Live Demo:** https://intelligentspeechanalysisplatform.streamlit.app/
 
 ## Features
 
